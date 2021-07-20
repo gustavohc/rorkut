@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
 import ProfileSidebar from '../src/components/ProfileSidebar'
@@ -16,7 +16,33 @@ export default function Home() {
     'peas',
     'omariosouto',
     'felipefialho'
-  ]
+  ];
+  const [followers, setFollowers] = useState([]);
+  useEffect(() => {
+    fetch('https://api.github.com/users/peas/followers')
+    .then(response => response.json())
+    .then(response => setFollowers(response));
+    // API GraphQL
+    fetch('', {
+      method: 'POST',
+      headers: {
+        'Authorization': '...',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        "query": `query {
+          allComminities {
+            title
+            id
+            imageUrl
+            creatorSlug
+          }
+        }`
+      })
+    })
+  }, []);
+
   return (
     <>
       <AlurakutMenu/>
@@ -40,6 +66,14 @@ export default function Home() {
                 title: formDate.get('title'),
                 image: formDate.get('image')
               };
+
+              fetch('/api/community', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(community)
+              })
               setCommnuties([...communities, community]);
             }}>
               <div>
