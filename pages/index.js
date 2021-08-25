@@ -5,9 +5,11 @@ import ProfileSidebar from '../src/components/ProfileSidebar'
 import ItemList from '../src/components/ItemList'
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'
+import nookies from 'nookies'
+import jwt from 'jsonwebtoken'
 
-export default function Home() {
-  const githubUser = 'gustavohc';
+export default function Home(props) {
+  const githubUser = props.githubUser;
   const [communities, setCommnuties] = useState([{
     title: 'Eu odeio acordar cedo',
     image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
@@ -134,4 +136,26 @@ export default function Home() {
       </MainGrid>
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context);
+  const token = cookies.USER_TOKEN;
+  
+  const isAuthenticated = true;
+  if(!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
+  const { githubUser } = jwt.decode(token);
+  
+  return {
+    props: {
+      githubUser
+    }
+  }
 }
